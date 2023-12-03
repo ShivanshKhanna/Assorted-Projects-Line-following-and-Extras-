@@ -1,0 +1,126 @@
+#include <QTRSensors.h>
+
+QTRSensors qtr;
+const uint8_t SensorCount = 4;
+uint16_t sensorValues[SensorCount];
+
+const int SpeedA = 150;
+const int SpeedB = 155;
+
+const int ENA = 3;
+const int ENB = 5;
+const int IN1 = 4;
+const int IN2 =6;
+const int IN3 = 7;
+const int IN4 = 8;
+const int drive = 50;
+
+void setup() {
+  qtr.setTypeAnalog();
+  qtr.setSensorPins((const uint8_t[]){A0, A1, A2, A3}, SensorCount);
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, HIGH); // turn on Arduino's LED to indicate we are in calibration mode
+
+  // Call calibrate() 400 times to make calibration take about 10 seconds.
+  for (uint16_t i = 0; i < 400; i++)
+  {
+    qtr.calibrate();
+  }
+  digitalWrite(LED_BUILTIN, LOW);
+  
+  Serial.begin(9600);                                           
+  pinMode(ENA, OUTPUT);
+  pinMode(ENB, OUTPUT);
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT);
+  pinMode(IN4, OUTPUT);
+  delay(1000);
+}
+void off(){
+  analogWrite(ENA,0);
+  analogWrite(ENB,0);
+  digitalWrite(IN1,LOW);
+  digitalWrite(IN2,LOW);
+  digitalWrite(IN3,LOW );
+  digitalWrite(IN4,LOW);
+  delay(100);
+}
+void forward() {
+  analogWrite(ENA,SpeedA);
+  analogWrite(ENB,SpeedB);
+  
+  digitalWrite(IN1,HIGH );
+  digitalWrite(IN2,LOW );
+  digitalWrite(IN3,LOW);
+  digitalWrite(IN4,HIGH );
+ 
+  delay(drive);
+  off();
+}
+void backward() {
+  analogWrite(ENA,SpeedA);
+  analogWrite(ENB,SpeedB);
+  
+  digitalWrite(IN1,LOW);
+  digitalWrite(IN2,HIGH);
+  digitalWrite(IN3,HIGH);
+  digitalWrite(IN4,LOW);
+ 
+  delay(drive);
+  off();
+}
+void left() {
+  analogWrite(ENA, SpeedA);
+  analogWrite(ENB, SpeedB);
+  
+  digitalWrite(IN1,LOW);
+  digitalWrite(IN2,HIGH);
+  digitalWrite(IN3,LOW);
+  digitalWrite(IN4,HIGH);
+ 
+  delay(drive);
+  off();
+}
+void right() {
+  analogWrite(ENA, SpeedA);
+  analogWrite(ENB, SpeedB);
+  
+  digitalWrite(IN1, HIGH);
+  digitalWrite(IN2,LOW);
+  digitalWrite(IN3, HIGH);
+  digitalWrite(IN4,LOW);
+ 
+  delay(drive);
+  off();
+}
+
+void loop() {
+
+  // Get a calibrated position for our line.
+  // Value 0 = seen or last seen by sensor 1
+  // Value 3000 = seen or last seen by sensor 4
+  uint16_t position = qtr.readLineBlack(sensorValues);
+  
+  qtr.readCalibrated(sensorValues);
+  
+  // print out raw sensor values and the position
+  for (uint8_t i = 0; i < SensorCount; i++)
+  {  
+    Serial.print(sensorValues[i]);
+    Serial.print('\t');
+  }
+  Serial.println(position);
+
+  // Check where we should go, we should be aiming to be at 1500...
+  if(position < 1800 && position > 1200){
+        Serial.println("forward");
+        forward();
+  } else if(position >= 1800 && position <= 3000){
+        Serial.println("right");
+        right();
+  } else if(position <= 1200 && position >= 250){
+        Serial.println("left");
+        left();
+  }
+}

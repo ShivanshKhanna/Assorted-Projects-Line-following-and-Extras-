@@ -1,0 +1,21 @@
+lcd1.setCursor(0,0);
+lcd1.print("Amount Required");
+ 
+lcd1.setCursor(0,1);
+lcd1.print("$3.00"); 
+
+lcd1.setCursor(0,1);
+lcd1.print("$6.00");
+
+lcd1.setCursor(0,1);
+lcd1.print("$9.00");
+ 
+ 
+lcd1.clear();
+lcd1.setCursor(0,0);
+lcd1.print("Amount Paid");
+lcd1.setCursor(0,1);
+lcd1.print("Drive Safe");
+delay(2000);
+lcd1.clear();
+}

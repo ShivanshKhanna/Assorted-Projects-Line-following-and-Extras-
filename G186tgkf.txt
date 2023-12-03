@@ -1,0 +1,17 @@
+const int Input3 = 7; //Defined logic pins for Motors A and B
+const int Input4 = 8;
+#define EnableB 5
+
+void setup() {
+  // put your setup code here, to run once:
+pinMode(Input3, OUTPUT); //All logic and enable pins are outputs, as an increase of speed or direction is noticeable
+pinMode(Input4, OUTPUT);
+pinMode(EnableB, OUTPUT);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+analogWrite(EnableB, 190);
+digitalWrite(Input3, HIGH); //Forwards
+digitalWrite(Input4, LOW);
+}
