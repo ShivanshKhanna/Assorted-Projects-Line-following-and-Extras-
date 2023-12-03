@@ -1,0 +1,16 @@
+const int sound = A4;
+
+void setup() {
+Serial.begin(9600);
+pinMode(sound, INPUT);
+}
+
+ void loop() {
+ int runningTotal = 0;
+for(int i = 0; i < 100; i++){
+runningTotal += analogRead(soundPin);
+delay(5);
+ }
+int averageSound = runningTotal / 100;
+Serial.println(averageSound);
+
